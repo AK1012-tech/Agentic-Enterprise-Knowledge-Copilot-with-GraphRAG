@@ -10,7 +10,7 @@ services:
       - postgres
       - qdrant
       - neo4j
-      - redis
+      - valkey
 
   streamlit:
     build:
@@ -46,8 +46,7 @@ services:
       - "7474:7474"
       - "7687:7687"
 
-  redis:
-    image: redis:7-alpine
+  valkey:
+    image: valkey/valkey:8-alpine
     ports:
       - "6379:6379"
-

@@ -53,5 +53,4 @@ docker compose -f deployment/docker-compose.yml up --build
 - GraphRAG v1 extracts entities and co-mention relationships, then uses the graph to enrich retrieval.
 - Hybrid retrieval combines deterministic vector-style embeddings with keyword scoring and reranking.
 - The OpenAI layer has local fallbacks to keep demos reliable.
-- Docker Compose includes Postgres, Qdrant, Neo4j, and Redis to show enterprise deployment direction.
-
+- Docker Compose includes Postgres, Qdrant, Neo4j, and Valkey to show enterprise deployment direction.
