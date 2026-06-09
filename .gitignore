@@ -1,0 +1,15 @@
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+data/raw/*
+data/processed/*
+data/embeddings/*
+data/graph_exports/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/embeddings/.gitkeep
+!data/graph_exports/.gitkeep
+
