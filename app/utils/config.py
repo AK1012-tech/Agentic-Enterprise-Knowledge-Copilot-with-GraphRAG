@@ -21,12 +21,19 @@ class Settings(BaseSettings):
     neo4j_password: str = "password123"
     redis_url: str = "redis://localhost:6379/0"
     database_url: str = "postgresql+psycopg://copilot:copilot@localhost:5432/copilot"
+    langchain_tracing_v2: bool = False
+    langchain_api_key: str = ""
+    langchain_project: str = "enterprise-knowledge-copilot"
+    use_external_services: bool = True
 
     if BaseSettings is not object:
-        model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+        model_config = SettingsConfigDict(
+            env_file=".env",
+            env_file_encoding="utf-8",
+            extra="ignore",
+        )
 
 
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-

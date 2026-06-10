@@ -2,6 +2,7 @@ from app.agents.planner_agent import PlannerAgent
 from app.agents.summarizer_agent import SummarizerAgent
 from app.agents.verifier_agent import VerifierAgent
 from app.api.schemas.chat_schema import ChatRequest
+from app.cache.redis_client import Cache
 from app.database.repository import DemoRepository
 from app.graph.graph_retriever import GraphRetriever
 from app.llms.llm_router import get_llm
@@ -15,13 +16,23 @@ class AgenticGraphRagWorkflow:
         self.settings = settings
         self.llm = get_llm(settings)
         self.planner = PlannerAgent()
-        self.graph_retriever = GraphRetriever()
-        self.hybrid_search = HybridSearch(VectorSearch(self.llm))
+        self.graph_retriever = GraphRetriever(settings)
+        self.hybrid_search = HybridSearch(VectorSearch(self.llm, settings))
         self.summarizer = SummarizerAgent()
         self.verifier = VerifierAgent()
+        self.cache = Cache(settings)
 
     def answer(self, request: ChatRequest) -> dict:
-        DemoRepository.instance().append_message(request.session_id, "user", request.question)
+        repository = DemoRepository.instance(self.settings)
+        repository.append_message(request.session_id, "user", request.question)
+        self.cache.append_json(
+            f"session:{request.session_id}:messages",
+            {"role": "user", "content": request.question},
+        )
+        cache_key = f"response:{request.tenant_id}:{request.session_id}:{request.question}"
+        cached = self.cache.get_json(cache_key)
+        if cached is not None:
+            return cached
         plan = self.planner.plan(request.question)
         contexts = []
         graph_context = []
@@ -39,8 +50,12 @@ class AgenticGraphRagWorkflow:
             prompt=prompt,
         )
         verified = self.verifier.verify(answer, contexts)
-        DemoRepository.instance().append_message(request.session_id, "assistant", answer)
-        return {
+        repository.append_message(request.session_id, "assistant", answer)
+        self.cache.append_json(
+            f"session:{request.session_id}:messages",
+            {"role": "assistant", "content": answer},
+        )
+        response = {
             "answer": answer,
             "citations": [
                 {
@@ -56,4 +71,5 @@ class AgenticGraphRagWorkflow:
             "verified": verified,
             "session_id": request.session_id,
         }
-
+        self.cache.set_json(cache_key, response, ttl_seconds=600)
+        return response

@@ -10,7 +10,7 @@ def test_chunk_text_preserves_content():
 
 
 def test_ingestion_indexes_chunks_and_graph():
-    pipeline = IngestionPipeline(Settings())
+    pipeline = IngestionPipeline(Settings(use_external_services=False))
     result = pipeline.ingest(
         filename="memo.txt",
         payload=b"OpenAI works with LangGraph. LangGraph supports GraphRAG workflows.",
@@ -19,4 +19,3 @@ def test_ingestion_indexes_chunks_and_graph():
     )
     assert result["chunks_indexed"] >= 1
     assert result["entities_indexed"] >= 1
-

@@ -11,7 +11,7 @@ class OpenAIClient:
         self.settings = settings
 
     def embed(self, texts: list[str]) -> list[list[float]]:
-        if self.settings.openai_api_key:
+        if self.settings.use_external_services and self.settings.openai_api_key:
             try:
                 from openai import OpenAI
 
@@ -26,7 +26,7 @@ class OpenAIClient:
         return [self._deterministic_embedding(text) for text in texts]
 
     def complete(self, system: str, prompt: str) -> str:
-        if self.settings.openai_api_key:
+        if self.settings.use_external_services and self.settings.openai_api_key:
             try:
                 from openai import OpenAI
 
@@ -60,4 +60,3 @@ class OpenAIClient:
             if context:
                 return f"Based on the indexed context: {context[:700]}"
         return "I do not have enough indexed evidence to answer confidently."
-

@@ -5,7 +5,7 @@ from app.workflows.agentic_workflow import AgenticGraphRagWorkflow
 
 
 def test_workflow_returns_citations_for_indexed_content():
-    settings = Settings()
+    settings = Settings(use_external_services=False)
     IngestionPipeline(settings).ingest(
         filename="policy.txt",
         payload=b"Acme Data Policy requires encryption for customer records.",
@@ -21,10 +21,9 @@ def test_workflow_returns_citations_for_indexed_content():
 
 
 def test_workflow_handles_no_evidence():
-    workflow = AgenticGraphRagWorkflow(Settings())
+    workflow = AgenticGraphRagWorkflow(Settings(use_external_services=False))
     result = workflow.answer(
         ChatRequest(question="What is the cafeteria menu on Mars?", tenant_id="missing")
     )
     assert result["citations"] == []
     assert result["verified"] is False
-

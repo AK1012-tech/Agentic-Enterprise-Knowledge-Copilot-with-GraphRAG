@@ -1,10 +1,8 @@
 import pytest
-
-
-fastapi = pytest.importorskip("fastapi")
-from fastapi.testclient import TestClient
-
 from app.main import create_app
+
+pytest.importorskip("fastapi")
+from fastapi.testclient import TestClient  # noqa: E402
 
 
 def test_health_endpoint():
@@ -28,4 +26,3 @@ def test_feedback_endpoint():
     )
     assert response.status_code == 200
     assert response.json()["status"] == "recorded"
-

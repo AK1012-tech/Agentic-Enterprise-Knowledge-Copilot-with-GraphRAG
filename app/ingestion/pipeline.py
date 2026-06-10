@@ -9,6 +9,7 @@ from app.graph.relationship_extractor import RelationshipExtractor
 from app.ingestion.chunking import chunk_text
 from app.llms.llm_router import get_llm
 from app.parsers.document_loader import DocumentLoader
+from app.retrieval.vector_search import VectorSearch
 from app.utils.config import Settings
 
 
@@ -19,7 +20,8 @@ class IngestionPipeline:
         self.llm = get_llm(settings)
         self.entity_extractor = EntityExtractor()
         self.relationship_extractor = RelationshipExtractor()
-        self.graph_builder = GraphBuilder()
+        self.graph_builder = GraphBuilder(settings)
+        self.vector_search = VectorSearch(self.llm, settings)
 
     def ingest(self, filename: str, payload: bytes, tenant_id: str, user_id: str) -> dict:
         document_id = str(uuid.uuid4())
@@ -48,7 +50,7 @@ class IngestionPipeline:
                     "entities": entities,
                 }
             )
-        DemoRepository.instance().save_document(
+        DemoRepository.instance(self.settings).save_document(
             {
                 "document_id": document_id,
                 "filename": filename,
@@ -58,6 +60,7 @@ class IngestionPipeline:
             },
             chunks,
         )
+        self.vector_search.index_chunks(chunks)
         self.graph_builder.upsert_relationships(all_relationships)
         return {
             "document_id": document_id,
@@ -66,4 +69,3 @@ class IngestionPipeline:
             "entities_indexed": len(all_entities),
             "relationships_indexed": len(all_relationships),
         }
-
