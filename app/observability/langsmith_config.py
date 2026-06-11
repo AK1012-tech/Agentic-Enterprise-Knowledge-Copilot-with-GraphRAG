@@ -37,7 +37,7 @@ class LangSmithConfig:
         if self._initialized:
             return
 
-        self.settings = settings
+        self.settings = settings or Settings()
         self._initialized = True
         self._setup_tracing()
 
@@ -49,7 +49,7 @@ class LangSmithConfig:
                 os.environ["LANGCHAIN_API_KEY"] = self.settings.langchain_api_key
                 os.environ["LANGCHAIN_PROJECT"] = self.settings.langchain_project
 
-                self._client = Client(api_key=self.settings.langchain_api_key)
+                type(self)._client = Client(api_key=self.settings.langchain_api_key)
                 logger.info(
                     f"LangSmith tracing enabled for project: {self.settings.langchain_project}"
                 )
@@ -65,7 +65,7 @@ class LangSmithConfig:
 
     @classmethod
     def get_client(cls) -> Client | None:
-        """Get LangSmith client if available."""
+        """Get the singleton LangSmith client if available."""
         return cls._client
 
     def create_trace_metadata(
