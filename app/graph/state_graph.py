@@ -36,9 +36,9 @@ class AgentGraphBuilder:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.llm = get_llm(settings)
-        self.planner = PlannerAgent()
+        self.planner = PlannerAgent(llm=self.llm)
         self.summarizer = SummarizerAgent()
-        self.verifier = VerifierAgent()
+        self.verifier = VerifierAgent(llm=self.llm)
         self.graph_retriever = GraphRetriever(settings)
         self.hybrid_search = HybridSearch(VectorSearch(self.llm, settings))
 
