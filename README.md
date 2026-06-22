@@ -65,7 +65,7 @@ docker compose -f deployment/docker-compose.yml up --build
 5. Record feedback and explain how it supports evaluation.
 6. (Optional) Show LangSmith trace for the request in https://smith.langchain.com
 
-## Interview Talking Points
+## Takeaway Points
 
 - The system is split into API, ingestion, retrieval, graph, agents, workflow, evaluation, observability, and UI modules.
 - **New**: LangGraph StateGraph replaces manual orchestration for reliable, traceable agent flows.
