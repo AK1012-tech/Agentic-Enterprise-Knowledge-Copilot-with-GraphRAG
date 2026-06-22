@@ -12,5 +12,4 @@ class HybridSearch:
     def search(self, query: str, tenant_id: str, document_ids: list[str] | None = None) -> list[dict]:
         vector_results = self.vector_search.search(query, tenant_id, document_ids)
         keyword_results = self.keyword_search.search(query, tenant_id, document_ids)
-        return self.reranker.rerank(vector_results + keyword_results)
-
+        return self.reranker.rerank(query, vector_results + keyword_results)
