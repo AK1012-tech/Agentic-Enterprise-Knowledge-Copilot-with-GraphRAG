@@ -1,6 +1,6 @@
 # Agentic Enterprise Knowledge Copilot with GraphRAG
 
-An interview-ready MVP for an enterprise knowledge copilot. It combines file ingestion,
+A MVP for an enterprise knowledge copilot. It combines file ingestion,
 hybrid retrieval, practical GraphRAG expansion, agentic orchestration, citations, feedback,
 and Dockerized infrastructure with full observability through LangGraph state machines
 and LangSmith tracing.
